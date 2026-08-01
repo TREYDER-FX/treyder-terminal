@@ -1,0 +1,610 @@
+cat << 'EOF' > index.html
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TREYDER-FX PRO AI TERMINAL</title>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0b0e14;
+            --card-bg: #131722;
+            --accent-green: #00e676;
+            --accent-red: #ff5252;
+            --accent-blue: #29b6f6;
+            --text-main: #ffffff;
+            --text-sub: #787b86;
+            --border-color: #1e222d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 5px;
+            margin-bottom: 10px;
+        }
+
+        .logo-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--accent-blue);
+            letter-spacing: 0.5px;
+        }
+
+        .scanner-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .pair-selector-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .pair-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .change-pair-text {
+            color: var(--accent-blue);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 230px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+            background: var(--card-bg);
+        }
+
+        .tf-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .tf-btn {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-sub);
+            padding: 8px 0;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .tf-btn.active {
+            background: #0088cc;
+            color: #fff;
+            border-color: #0088cc;
+        }
+
+        .analysis-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00c853, #00e676);
+            color: #000;
+            font-weight: 900;
+            font-size: 18px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+
+        .analysis-btn:active {
+            transform: scale(0.98);
+        }
+
+        .sentiment-bar-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .sentiment-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .sentiment-bar {
+            height: 8px;
+            width: 100%;
+            background: var(--accent-red);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .sentiment-fill {
+            height: 100%;
+            background: var(--accent-green);
+            width: 50%;
+            transition: width 0.5s ease;
+        }
+
+        .signal-box {
+            background: var(--card-bg);
+            border: 1.5px solid var(--accent-green);
+            border-radius: 14px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .signal-title {
+            font-size: 11px;
+            color: var(--text-sub);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .signal-direction {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--accent-green);
+            margin-bottom: 6px;
+        }
+
+        .signal-meta {
+            font-size: 12px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .progress-bar-bg {
+            height: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-green);
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        .targets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .target-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .target-label {
+            font-size: 10px;
+            color: var(--text-sub);
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+
+        .target-val {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .ind-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .ind-name {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+        }
+
+        .ind-val {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        /* Modal Pairs */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 999;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .close-btn {
+            background: var(--accent-red);
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .section-tag {
+            background: #1e222d;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent-blue);
+            margin: 12px 0 6px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pair-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .badge {
+            background: rgba(41, 182, 246, 0.15);
+            color: var(--accent-blue);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .badge-otc {
+            background: rgba(171, 71, 188, 0.2);
+            color: #ab47bc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-title">TREYDER-FX PRO AI</div>
+        <div class="scanner-status">
+            <div class="pulse-dot"></div>
+            REALTIME SCANNER
+        </div>
+    </div>
+
+    <div class="pair-selector-btn" onclick="openModal()">
+        <div class="pair-info">
+            <span id="current-pair-symbol">🇪🇺🇺🇸 EUR/USD (OTC)</span>
+        </div>
+        <div class="change-pair-text">Иваз кардан ➔</div>
+    </div>
+
+    <div class="chart-container" id="tv_chart"></div>
+
+    <div class="tf-selector">
+        <div class="tf-btn" onclick="setTF('M1', this)">M1</div>
+        <div class="tf-btn active" onclick="setTF('M5', this)">M5</div>
+        <div class="tf-btn" onclick="setTF('M15', this)">M15</div>
+        <div class="tf-btn" onclick="setTF('H1', this)">H1</div>
+    </div>
+
+    <button class="analysis-btn" onclick="startAnalysis()">⚡️ АНАЛИЗ</button>
+
+    <div class="sentiment-bar-container">
+        <div class="sentiment-labels">
+            <span style="color: var(--accent-green);" id="buy-perc">BUY: 88%</span>
+            <span style="color: var(--accent-red);" id="sell-perc">SELL: 12%</span>
+        </div>
+        <div class="sentiment-bar">
+            <div class="sentiment-fill" id="sentiment-fill" style="width: 88%;"></div>
+        </div>
+    </div>
+
+    <div class="signal-box" id="signal-box">
+        <div class="signal-title">СИГНАЛИ AI-АГОРА:</div>
+        <div class="signal-direction" id="signal-text">BUY 🟢 (БОЛО)</div>
+        <div class="signal-meta" id="signal-time">ЭКСПИРАЦИЯ: <b id="selected-tf">M5</b> | Вақт: <span id="timer">05:00</span></div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <div class="targets-grid">
+        <div class="target-card">
+            <div class="target-label">ENTRY PRICE</div>
+            <div class="target-val" style="color: var(--accent-blue);" id="entry-price">1.08540</div>
+        </div>
+        <div class="target-card">
+            <div class="target-label">TAKE PROFIT</div>
+            <div class="target-val" style="color: var(--accent-green);" id="tp-price">1.08720</div>
+        </div>
+        <div class="target-card">
+            <div class="target-label">STOP LOSS</div>
+            <div class="target-val" style="color: var(--accent-red);" id="sl-price">1.08380</div>
+        </div>
+    </div>
+
+    <div class="indicators-grid">
+        <div class="ind-card">
+            <div class="ind-name">RSI (14)</div>
+            <div class="ind-val" id="rsi-val">28 (Oversold)</div>
+        </div>
+        <div class="ind-card">
+            <div class="ind-name">MACD (12,26)</div>
+            <div class="ind-val" id="macd-val">Bullish Cross</div>
+        </div>
+        <div class="ind-card">
+            <div class="ind-name">EMA 200</div>
+            <div class="ind-val" style="color: var(--accent-green);" id="ema-val">Strong Uptrend</div>
+        </div>
+        <div class="ind-card">
+            <div class="ind-name">Stochastic (14,3,3)</div>
+            <div class="ind-val" id="stoch-val">Bullish Impuls</div>
+        </div>
+    </div>
+
+    <!-- Modal Pairs (ALL PAIRS INCLUDED) -->
+    <div class="modal" id="pairsModal">
+        <div class="modal-header">
+            <div class="modal-title">ИНТИХОБИ ПАРАҲО</div>
+            <button class="close-btn" onclick="closeModal()">Пӯшидан</button>
+        </div>
+
+        <div class="section-tag">⚡️ POCKET OPTION (OTC 24/7) <span>HIGH PAYOUT</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/USD (OTC)', 'FX:EURUSD', 'otc')">🇪🇺🇺🇸 EUR/USD <span class="badge badge-otc">OTC 92%</span></div>
+        <div class="pair-item" onclick="selectPair('GBP/USD (OTC)', 'FX:GBPUSD', 'otc')">🇬🇧🇺🇸 GBP/USD <span class="badge badge-otc">OTC 92%</span></div>
+        <div class="pair-item" onclick="selectPair('USD/JPY (OTC)', 'FX:USDJPY', 'otc')">🇺🇸🇯🇵 USD/JPY <span class="badge badge-otc">OTC 92%</span></div>
+        <div class="pair-item" onclick="selectPair('AUD/USD (OTC)', 'FX:AUDUSD', 'otc')">🇦🇺🇺🇸 AUD/USD <span class="badge badge-otc">OTC 90%</span></div>
+        <div class="pair-item" onclick="selectPair('USD/CAD (OTC)', 'FX:USDCAD', 'otc')">🇺🇸🇨🇦 USD/CAD <span class="badge badge-otc">OTC 90%</span></div>
+        <div class="pair-item" onclick="selectPair('USD/CHF (OTC)', 'FX:USDCHF', 'otc')">🇺🇸🇨🇭 USD/CHF <span class="badge badge-otc">OTC 89%</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/GBP (OTC)', 'FX:EURGBP', 'otc')">🇪🇺🇬🇧 EUR/GBP <span class="badge badge-otc">OTC 88%</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/JPY (OTC)', 'FX:EURJPY', 'otc')">🇪🇺🇯🇵 EUR/JPY <span class="badge badge-otc">OTC 88%</span></div>
+        <div class="pair-item" onclick="selectPair('GBP/JPY (OTC)', 'FX:GBPJPY', 'otc')">🇬🇧🇯🇵 GBP/JPY <span class="badge badge-otc">OTC 88%</span></div>
+        <div class="pair-item" onclick="selectPair('NZD/USD (OTC)', 'FX:NZDUSD', 'otc')">🇳🇿🇺🇸 NZD/USD <span class="badge badge-otc">OTC 87%</span></div>
+
+        <div class="section-tag">🌐 FOREX LIVE (БОЗОРИ ВОҚЕӢ) <span>REALTIME</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/USD', 'FX:EURUSD', 'live')">🇪🇺🇺🇸 EUR/USD <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('GBP/USD', 'FX:GBPUSD', 'live')">🇬🇧🇺🇸 GBP/USD <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('USD/JPY', 'FX:USDJPY', 'live')">🇺🇸🇯🇵 USD/JPY <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('AUD/USD', 'FX:AUDUSD', 'live')">🇦🇺🇺🇸 AUD/USD <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('USD/CAD', 'FX:USDCAD', 'live')">🇺🇸🇨🇦 USD/CAD <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('USD/CHF', 'FX:USDCHF', 'live')">🇺🇸🇨🇭 USD/CHF <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/GBP', 'FX:EURGBP', 'live')">🇪🇺🇬🇧 EUR/GBP <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/JPY', 'FX:EURJPY', 'live')">🇪🇺🇯🇵 EUR/JPY <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('GBP/JPY', 'FX:GBPJPY', 'live')">🇬🇧🇯🇵 GBP/JPY <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('AUD/JPY', 'FX:AUDJPY', 'live')">🇦🇺🇯🇵 AUD/JPY <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('NZD/USD', 'FX:NZDUSD', 'live')">🇳🇿🇺🇸 NZD/USD <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('GOLD (XAU/USD)', 'OANDA:XAUUSD', 'live')">🥇 GOLD (XAU/USD) <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('SILVER (XAG/USD)', 'OANDA:XAGUSD', 'live')">🥈 SILVER (XAG/USD) <span class="badge">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('US OIL (WTI)', 'NYMEX:CL1!', 'live')">🛢 US OIL (WTI) <span class="badge">LIVE</span></div>
+
+        <div class="section-tag">🚀 BINANCE CRYPTO 24/7 <span>BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('BITCOIN (BTC/USDT)', 'BINANCE:BTCUSDT', 'crypto')">₿ BITCOIN (BTC/USDT) <span class="badge">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('ETHEREUM (ETH/USDT)', 'BINANCE:ETHUSDT', 'crypto')">Ξ ETHEREUM (ETH/USDT) <span class="badge">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('SOLANA (SOL/USDT)', 'BINANCE:SOLUSDT', 'crypto')">☀️ SOLANA (SOL/USDT) <span class="badge">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('RIPPLE (XRP/USDT)', 'BINANCE:XRPUSDT', 'crypto')">💧 RIPPLE (XRP/USDT) <span class="badge">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('BNB (BNB/USDT)', 'BINANCE:BNBUSDT', 'crypto')">🟡 BNB (BNB/USDT) <span class="badge">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('DOGECOIN (DOGE/USDT)', 'BINANCE:DOGEUSDT', 'crypto')">🐶 DOGECOIN (DOGE/USDT) <span class="badge">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('CARDANO (ADA/USDT)', 'BINANCE:ADAUSDT', 'crypto')">🔷 CARDANO (ADA/USDT) <span class="badge">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('AVAX (AVAX/USDT)', 'BINANCE:AVAXUSDT', 'crypto')">🔺 AVAX (AVAX/USDT) <span class="badge">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('TONCOIN (TON/USDT)', 'BINANCE:TONUSDT', 'crypto')">💎 TONCOIN (TON/USDT) <span class="badge">BINANCE</span></div>
+    </div>
+
+    <script>
+        let currentSymbol = 'FX:EURUSD';
+        let currentTF = 'M5';
+        let timerInterval;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq, type, duration) {
+            try {
+                if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq || 800, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + (duration || 0.15));
+            } catch(e){}
+        }
+
+        function initChart(symbol) {
+            document.getElementById('tv_chart').innerHTML = '';
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": symbol,
+                "interval": "5",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#131722",
+                "enable_publishing": false,
+                "hide_top_toolbar": true,
+                "save_image": false,
+                "container_id": "tv_chart"
+            });
+        }
+
+        initChart(currentSymbol);
+
+        function openModal() { document.getElementById('pairsModal').style.display = 'block'; }
+        function closeModal() { document.getElementById('pairsModal').style.display = 'none'; }
+
+        function selectPair(name, symbol, type) {
+            document.getElementById('current-pair-symbol').innerText = name;
+            currentSymbol = symbol;
+            initChart(symbol);
+            closeModal();
+            startAnalysis();
+        }
+
+        function setTF(tf, elem) {
+            document.querySelectorAll('.tf-btn').forEach(btn => btn.classList.remove('active'));
+            elem.classList.add('active');
+            currentTF = tf;
+            document.getElementById('selected-tf').innerText = tf;
+            startAnalysis();
+        }
+
+        function startAnalysis() {
+            clearInterval(timerInterval);
+            playBeep(600, 'sine', 0.1);
+
+            if (navigator.vibrate) { navigator.vibrate(50); }
+
+            const btn = document.querySelector('.analysis-btn');
+            btn.innerText = "⏳ ТАҲЛИЛИ AI...";
+            btn.style.opacity = "0.6";
+
+            setTimeout(() => {
+                btn.innerText = "⚡️ АНАЛИЗ";
+                btn.style.opacity = "1";
+
+                playBeep(1200, 'triangle', 0.25);
+                if (navigator.vibrate) { navigator.vibrate([100, 50, 100]); }
+
+                const isBuy = Math.random() > 0.45;
+                const buyP = isBuy ? Math.floor(Math.random() * 12) + 82 : Math.floor(Math.random() * 15) + 10;
+                const sellP = 100 - buyP;
+
+                document.getElementById('buy-perc').innerText = `BUY: ${buyP}%`;
+                document.getElementById('sell-perc').innerText = `SELL: ${sellP}%`;
+                document.getElementById('sentiment-fill').style.width = `${buyP}%`;
+
+                const sigBox = document.getElementById('signal-box');
+                const sigText = document.getElementById('signal-text');
+
+                if (isBuy) {
+                    sigText.innerText = "BUY 🟢 (БОЛО)";
+                    sigText.style.color = "var(--accent-green)";
+                    sigBox.style.borderColor = "var(--accent-green)";
+                } else {
+                    sigText.innerText = "SELL 🔴 (ПАСТ)";
+                    sigText.style.color = "var(--accent-red)";
+                    sigBox.style.borderColor = "var(--accent-red)";
+                }
+
+                const base = (Math.random() * 0.5 + 1.05).toFixed(5);
+                document.getElementById('entry-price').innerText = base;
+                document.getElementById('tp-price').innerText = (parseFloat(base) + 0.00180).toFixed(5);
+                document.getElementById('sl-price').innerText = (parseFloat(base) - 0.00160).toFixed(5);
+
+                let seconds = currentTF === 'M1' ? 60 : currentTF === 'M5' ? 300 : currentTF === 'M15' ? 900 : 3600;
+                const totalSec = seconds;
+
+                timerInterval = setInterval(() => {
+                    seconds--;
+                    let m = Math.floor(seconds / 60);
+                    let s = seconds % 60;
+                    document.getElementById('timer').innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                    document.getElementById('progress-fill').style.width = `${(seconds / totalSec) * 100}%`;
+
+                    if (seconds <= 0) clearInterval(timerInterval);
+                }, 1000);
+
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
+EOF
