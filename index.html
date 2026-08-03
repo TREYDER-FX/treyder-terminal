@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOREXBOT PRO MAX v10</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <span class="logo">⚡ FOREXBOT PRO <span class="version-badge">v10.0</span></span>
+            <button class="pair-btn" onclick="openModal()" id="pairDisplay">BTC/USDT ▾</button>
+        </div>
+        <div class="header-right">
+            <button class="sound-btn active" id="soundBtn" onclick="toggleSound()">🔊</button>
+            <span class="clock" id="clock">00:00:00</span>
+        </div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+        <span class="status-item"><span class="status-dot green"></span><span class="online">ONLINE</span></span>
+        <span class="status-item">📊 <span id="botStatus" style="color:var(--primary)">Тайёр</span></span>
+        <span class="status-item">🔄 Навсозӣ: <span id="updateCount">0</span></span>
+        <span class="status-item">📡 <span id="priceStatus">--</span></span>
+        <span class="status-item">⏱ <span id="latencyStatus">0ms</span></span>
+    </div>
+
+    <!-- TIMEFRAMES -->
+    <div class="timeframes">
+        <button class="tf-btn active" data-tf="1" onclick="changeTimeframe('1',this)">1m</button>
+        <button class="tf-btn" data-tf="3" onclick="changeTimeframe('3',this)">3m</button>
+        <button class="tf-btn" data-tf="5" onclick="changeTimeframe('5',this)">5m</button>
+        <button class="tf-btn" data-tf="15" onclick="changeTimeframe('15',this)">15m</button>
+        <button class="tf-btn" data-tf="30" onclick="changeTimeframe('30',this)">30m</button>
+        <button class="tf-btn" data-tf="60" onclick="changeTimeframe('60',this)">1H</button>
+    </div>
+
+    <!-- CHART -->
+    <div class="chart-box">
+        <iframe id="chartFrame" src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BTCUSDT&interval=1&theme=dark&locale=ru" scrolling="no"></iframe>
+        <div class="chart-overlay">📊 Live • <span id="chartTimeframe">1m</span></div>
+    </div>
+
+    <!-- ANALYZE BUTTON -->
+    <button class="analyze-btn" onclick="runAnalysis()" id="analyzeBtn">
+        <span class="btn-icon">⚡</span>
+        <span><span class="btn-text">ТАҲЛИЛИ БОЗОР</span><span class="btn-sub">8 ИНДИКАТОР • 6 API</span></span>
+    </button>
+
+    <!-- SIGNAL CARD -->
+    <div class="signal-card" id="signalCard">
+        <div class="signal-top">
+            <span class="signal-agreement">📐 ТАВОФУҚ: <span id="agreement">--</span></span>
+            <span class="signal-time" id="signalTime">--:--:--</span>
+        </div>
+        <div class="signal-main" id="signalMain">⏳ ИНТИЗОР</div>
+        <div class="signal-sub" id="signalSub">Тугмаро пахш кунед</div>
+        <div class="signal-sub">⏱ ТО БАСТАНИ ШАМЪ: <b id="candleCountdown">--:--</b></div>
+        <div style="text-align:center"><span class="signal-badge neutral" id="signalBadge">⏳</span></div>
+    </div>
+
+    <!-- INFO GRID -->
+    <div class="info-grid">
+        <div class="info-card"><span class="info-icon">📈</span><div class="info-label">НАРХ</div><div class="info-value blue" id="currentPriceDisplay">--</div></div>
+        <div class="info-card"><span class="info-icon">🌊</span><div class="info-label">ATR</div><div class="info-value gold" id="atrValue">--</div></div>
+        <div class="info-card"><span class="info-icon">🗂</span><div class="info-label">МАНБАЪ</div><div class="info-value blue" id="sourceDisplay">--</div></div>
+        <div class="info-card"><span class="info-icon">🛑</span><div class="info-label">STOP LOSS</div><div class="info-value red" id="slValue">--</div></div>
+        <div class="info-card"><span class="info-icon">🎯</span><div class="info-label">TAKE PROFIT</div><div class="info-value green" id="tpValue">--</div></div>
+        <div class="info-card"><span class="info-icon">⏱</span><div class="info-label">ТАЙМФРЕЙМ</div><div class="info-value green" id="tfDisplay">1m</div></div>
+    </div>
+
+    <!-- INDICATORS -->
+    <div class="indicator-grid">
+        <div class="indicator-item neutral" id="indRsi"><span class="indicator-name">📊 RSI (14)</span><span class="indicator-value neutral" id="rsiValue">--</span></div>
+        <div class="indicator-item neutral" id="indMacd"><span class="indicator-name">📈 MACD (12,26,9)</span><span class="indicator-value neutral" id="macdValue">--</span></div>
+        <div class="indicator-item neutral" id="indEma"><span class="indicator-name">📉 EMA 200</span><span class="indicator-value neutral" id="emaValue">--</span></div>
+        <div class="indicator-item neutral" id="indStoch"><span class="indicator-name">🌀 Stochastic (14)</span><span class="indicator-value neutral" id="stochValue">--</span></div>
+        <div class="indicator-item neutral" id="indAdx"><span class="indicator-name">💪 ADX (14)</span><span class="indicator-value neutral" id="adxValue">--</span></div>
+        <div class="indicator-item neutral" id="indBb"><span class="indicator-name">📏 Bollinger Bands</span><span class="indicator-value neutral" id="bbValue">--</span></div>
+        <div class="indicator-item neutral" id="indVwap"><span class="indicator-name">⚖️ VWAP</span><span class="indicator-value neutral" id="vwapValue">--</span></div>
+        <div class="indicator-item neutral" id="indSar"><span class="indicator-name">🔄 Parabolic SAR</span><span class="indicator-value neutral" id="sarValue">--</span></div>
+    </div>
+
+    <!-- MTF -->
+    <div class="mtf-box">
+        <div class="mtf-title"><span>📊 MTF МУВОФИҚАТ</span><span id="mtfStatus">--</span></div>
+        <div class="mtf-consensus-bar" id="mtfConsensusBar"><span style="width:100%;background:#2a3a52"></span></div>
+        <div class="mtf-row">
+            <div class="mtf-cell"><span class="mtf-tf">1m</span><span class="mtf-arrow neutral">--</span></div>
+            <div class="mtf-cell"><span class="mtf-tf">5m</span><span class="mtf-arrow neutral">--</span></div>
+            <div class="mtf-cell"><span class="mtf-tf">15m</span><span class="mtf-arrow neutral">--</span></div>
+            <div class="mtf-cell"><span class="mtf-tf">1H</span><span class="mtf-arrow neutral">--</span></div>
+        </div>
+        <div class="mtf-summary" id="mtfSummary">Пас аз таҳлил</div>
+    </div>
+
+    <!-- TREND -->
+    <div class="trend-panel" id="trendPanel">
+        <div class="trend-text"><div class="label">📌 ТАМОЮЛ</div><div class="action gold" id="trendAction">⏳ Интизор</div></div>
+        <span class="trend-badge badge-neutral" id="trendBadge">⏳</span>
+    </div>
+
+    <div class="disclaimer">⚠️ Таҳлили техникӣ аст, на маслиҳати молиявӣ.</div>
+
+    <div class="footer">
+        <div>🔹 <span class="highlight">5 ПЛАТФОРМА</span> | FOREX • OTC • BINANCE • BYBIT • OKX</div>
+        <div class="creator">✦ Созанда: <span>Fariz Karimov</span> • 2026 ✦</div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal">
+        <div class="modal-header">
+            <span class="modal-title">📊 ИНТИХОБИ АКТИВ</span>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="category">
+            <div class="category-title cat-binance"><span>🟢 BINANCE</span><span class="badge" style="background:#27ae60;color:#fff">API</span></div>
+            <div class="pair-item" onclick="selectPair('BTC/USDT','BINANCE:BTCUSDT','BTCUSDT','binance')"><span class="pair-name">₿ BTC/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+            <div class="pair-item" onclick="selectPair('ETH/USDT','BINANCE:ETHUSDT','ETHUSDT','binance')"><span class="pair-name">Ξ ETH/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+        </div>
+        <div class="category">
+            <div class="category-title cat-forex"><span>🌍 FOREX</span><span class="badge" style="background:#2980b9;color:#fff">LIVE</span></div>
+            <div class="pair-item" onclick="selectPair('EUR/USD','FX:EURUSD','EUR/USD','forex')"><span class="pair-name">🇪🇺🇺🇸 EUR/USD</span><span class="tag tag-live">LIVE</span></div>
+            <div class="pair-item" onclick="selectPair('GBP/USD','FX:GBPUSD','GBP/USD','forex')"><span class="pair-name">🇬🇧🇺🇸 GBP/USD</span><span class="tag tag-live">LIVE</span></div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="api.js"></script>
+    <script src="indicators.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
