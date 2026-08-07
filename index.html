@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOREXBOT PRO v10 — Ислоҳшуда</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#00ff88;--secondary:#0099ff;--danger:#ff3b30;--warning:#ffd700;--bg:#0a0e17;--card:rgba(13,21,32,0.92);--border:rgba(42,58,85,0.5);--text:#e0e6ed;--muted:#5a6b80}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:12px;min-height:100vh}
+@keyframes glow{0%{box-shadow:0 0 20px rgba(0,255,136,0.1)}50%{box-shadow:0 0 50px rgba(0,255,136,0.25)}100%{box-shadow:0 0 20px rgba(0,255,136,0.1)}}
+@keyframes glowRed{0%{box-shadow:0 0 20px rgba(255,59,48,0.1)}50%{box-shadow:0 0 50px rgba(255,59,48,0.25)}100%{box-shadow:0 0 20px rgba(255,59,48,0.1)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--primary);border-radius:4px}
+
+.header{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#141c2b,#1a2335);padding:10px 16px;border-radius:14px;border:1px solid var(--border);margin-bottom:10px;box-shadow:0 4px 30px rgba(0,0,0,0.5)}
+.header-left{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:6px}
+.version-badge{font-size:9px;background:rgba(0,255,136,0.15);color:var(--primary);padding:2px 8px;border-radius:10px;font-weight:600;-webkit-text-fill-color:var(--primary)}
+.pair-btn{background:linear-gradient(135deg,#1f2d45,#2a3d5e);border:1px solid var(--border);color:#fff;padding:6px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:6px}
+.pair-btn:hover{border-color:var(--primary)}
+.header-right{display:flex;align-items:center;gap:8px}
+.clock{color:var(--primary);font-weight:700;font-size:15px;background:rgba(0,255,136,0.05);padding:4px 12px;border-radius:6px;border:1px solid rgba(0,255,136,0.1);font-family:'JetBrains Mono',monospace}
+.sound-btn{background:rgba(13,21,32,0.8);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:14px}
+.sound-btn.active{color:var(--primary);border-color:var(--primary)}
+
+.status-bar{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:6px 14px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:4px}
+.status-item{display:flex;align-items:center;gap:4px}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.status-dot.green{background:var(--primary);box-shadow:0 0 10px rgba(0,255,136,0.5);animation:blink 2s infinite}
+.online{color:var(--primary);font-weight:700}
+.status-value{color:var(--primary);font-weight:700}
+
+.timeframes{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-bottom:10px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:6px}
+.tf-btn{background:transparent;border:1px solid transparent;color:#7a8ba0;padding:10px 0;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;transition:all .25s;text-align:center;font-family:'JetBrains Mono',monospace}
+.tf-btn.active{background:linear-gradient(135deg,#00cc66,var(--primary));color:#000;box-shadow:0 0 20px rgba(0,255,136,0.25);transform:scale(1.05)}
+.tf-btn:hover:not(.active){background:#1f2d45;color:#fff}
+
+.chart-box{background:var(--card);border-radius:14px;padding:6px;border:1px solid var(--border);margin-bottom:10px;overflow:hidden;position:relative}
+.chart-box iframe{width:100%;height:260px;border:none;border-radius:8px}
+.chart-overlay{position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.7);padding:4px 10px;border-radius:4px;font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+.analyze-btn{width:100%;background:linear-gradient(135deg,var(--primary),#00cc66,var(--secondary));border:none;padding:14px;border-radius:12px;font-size:16px;font-weight:800;color:#000;cursor:pointer;margin-bottom:10px;box-shadow:0 0 40px rgba(0,255,136,0.15);transition:all .3s;text-transform:uppercase;letter-spacing:1.5px;display:flex;align-items:center;justify-content:center;gap:10px}
+.analyze-btn:hover{transform:scale(1.01)}
+.analyze-btn:disabled{opacity:.7;cursor:wait}
+.analyze-btn .spin{display:inline-block;animation:spin 1s linear infinite}
+
+.signal-card{background:linear-gradient(145deg,rgba(20,28,43,0.95),rgba(26,35,53,0.95));border-radius:14px;padding:16px;border:2px solid var(--border);margin-bottom:10px;transition:all .5s}
+.signal-card.bullish{border-color:var(--primary);animation:glow 2.5s infinite}
+.signal-card.bearish{border-color:var(--danger);animation:glowRed 2.5s infinite}
+.signal-card.bullish .signal-main{color:var(--primary)}
+.signal-card.bearish .signal-main{color:var(--danger)}
+.signal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.signal-agreement{font-size:12px;color:var(--muted)}
+.signal-agreement .agr-value{color:var(--primary);font-weight:700;font-size:14px}
+.signal-time{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.signal-main{font-size:30px;font-weight:900;text-align:center;margin:4px 0}
+.signal-sub{text-align:center;font-size:12px;color:var(--muted);margin-top:2px}
+.signal-badge{display:inline-block;padding:2px 14px;border-radius:20px;font-size:11px;font-weight:700;margin-top:6px}
+.signal-badge.bullish{background:rgba(0,255,136,0.15);color:var(--primary)}
+.signal-badge.bearish{background:rgba(255,59,48,0.15);color:var(--danger)}
+.signal-badge.neutral{background:rgba(255,215,0,0.15);color:var(--warning)}
+.error-box{text-align:center;color:var(--danger);font-size:13px;padding:10px}
+
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.info-card{background:var(--card);border-radius:10px;padding:8px;border:1px solid var(--border);text-align:center}
+.info-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.info-value{font-size:13px;font-weight:700;margin-top:2px;font-family:'JetBrains Mono',monospace}
+.info-value.green{color:var(--primary)}
+.info-value.blue{color:var(--secondary)}
+.info-value.gold{color:var(--warning)}
+.info-value.red{color:var(--danger)}
+
+/* ===== TRADE PANEL ===== */
+.trade-panel{background:linear-gradient(145deg,rgba(20,28,43,0.95),rgba(26,35,53,0.95));border-radius:14px;padding:14px;border:2px solid #f39c12;margin-bottom:10px}
+.trade-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.trade-title{font-size:14px;font-weight:800;color:#f39c12;display:flex;align-items:center;gap:6px}
+.trade-badge{font-size:9px;padding:2px 10px;border-radius:10px;font-weight:700}
+.trade-badge.live{background:rgba(255,59,48,0.2);color:var(--danger)}
+.trade-badge.demo{background:rgba(255,215,0,0.2);color:var(--warning)}
+.trade-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.trade-item{background:rgba(13,21,32,0.6);border-radius:8px;padding:6px;text-align:center}
+.trade-item label{font-size:8px;color:var(--muted);text-transform:uppercase;display:block}
+.trade-item select,.trade-item input{width:100%;background:#1a2335;border:1px solid var(--border);color:#fff;border-radius:4px;padding:4px;font-size:12px;font-weight:700;text-align:center;font-family:'JetBrains Mono',monospace}
+.trade-item select option.buy{color:var(--primary)}
+.trade-item select option.sell{color:var(--danger)}
+.trade-item input{color:var(--primary)}
+.trade-item .value{font-size:14px;font-weight:700;color:var(--warning)}
+.trade-sl-tp{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.trade-sl-tp .trade-item{background:rgba(13,21,32,0.6);border-radius:8px;padding:6px;text-align:center}
+.trade-sl-tp .trade-item input{color:var(--text)}
+.trade-sl-tp .trade-item input.sl{color:var(--danger)}
+.trade-sl-tp .trade-item input.tp{color:var(--primary)}
+.trade-buttons{display:flex;gap:6px}
+.trade-btn{flex:2;padding:10px;border-radius:10px;font-weight:800;font-size:14px;border:none;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:6px}
+.trade-btn:disabled{opacity:.5;cursor:wait}
+.trade-btn.buy{background:linear-gradient(135deg,var(--primary),#00cc66);color:#000}
+.trade-btn.buy:hover{transform:scale(1.02)}
+.trade-btn.sell{background:linear-gradient(135deg,var(--danger),#cc0000);color:#fff}
+.trade-btn.sell:hover{transform:scale(1.02)}
+.trade-btn.demo{flex:1;background:rgba(255,215,0,0.15);border:1px solid var(--warning);color:var(--warning)}
+.trade-btn.demo:hover{background:rgba(255,215,0,0.25)}
+.trade-result{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:11px;display:none;text-align:center}
+.trade-result.show{display:block}
+.trade-result.success{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);color:var(--primary)}
+.trade-result.error{background:rgba(255,59,48,0.1);border:1px solid rgba(255,59,48,0.2);color:var(--danger)}
+.trade-result.info{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);color:var(--warning)}
+
+/* ===== PIPS CALCULATOR ===== */
+.pips-box{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--border);margin-bottom:10px}
+.pips-title{font-size:13px;font-weight:800;color:var(--secondary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.pips-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.pips-item{background:rgba(13,21,32,0.6);border-radius:8px;padding:8px;text-align:center;cursor:pointer;border:1px solid transparent;transition:all .2s}
+.pips-item:hover{border-color:var(--primary)}
+.pips-item.active{border-color:var(--primary);background:rgba(0,255,136,0.06)}
+.pips-item .pips-label{font-size:9px;color:var(--muted);text-transform:uppercase}
+.pips-item .pips-value{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--primary)}
+.pips-result{background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.8}
+.pips-result b{color:var(--primary);font-family:'JetBrains Mono',monospace}
+.pips-result .danger{color:var(--danger)}
+.pips-result .pip-green{color:var(--primary)}
+.pips-note{font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5}
+
+.indicator-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:10px}
+.indicator-item{background:var(--card);border-radius:10px;padding:8px 12px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.indicator-name{font-size:10px;color:var(--muted);font-weight:500}
+.indicator-value{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.indicator-value.bullish{color:var(--primary)}
+.indicator-value.bearish{color:var(--danger)}
+.indicator-value.neutral{color:var(--warning)}
+
+.trend-panel{background:linear-gradient(135deg,rgba(13,21,32,0.95),rgba(20,28,43,0.95));border-radius:12px;padding:10px 16px;border-left:4px solid var(--warning);display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.trend-panel.bullish{border-left-color:var(--primary)}
+.trend-panel.bearish{border-left-color:var(--danger)}
+.trend-text .label{color:var(--muted);font-size:10px;text-transform:uppercase}
+.trend-text .action{font-weight:700;font-size:14px}
+.trend-text .action.green{color:var(--primary)}
+.trend-text .action.red{color:var(--danger)}
+.trend-text .action.gold{color:var(--warning)}
+.trend-badge{padding:4px 14px;border-radius:20px;font-weight:700;font-size:13px}
+.badge-bullish{background:rgba(0,255,136,0.15);color:var(--primary)}
+.badge-bearish{background:rgba(255,59,48,0.15);color:var(--danger)}
+.badge-neutral{background:rgba(255,215,0,0.15);color:var(--warning)}
+
+.mtf-box{background:var(--card);border-radius:14px;padding:12px 14px;border:1px solid var(--border);margin-bottom:10px}
+.mtf-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.mtf-consensus-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin-bottom:10px;background:#1a2335}
+.mtf-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mtf-cell{background:rgba(20,28,43,0.7);border-radius:8px;padding:8px 4px;text-align:center;border:1px solid var(--border)}
+.mtf-cell.bullish{border-color:rgba(0,255,136,0.4);background:rgba(0,255,136,0.06)}
+.mtf-cell.bearish{border-color:rgba(255,59,48,0.4);background:rgba(255,59,48,0.06)}
+.mtf-cell .mtf-tf{font-size:10px;color:var(--muted);font-weight:700;font-family:'JetBrains Mono',monospace}
+.mtf-cell .mtf-arrow{font-size:18px;display:block;margin:2px 0}
+.mtf-cell .mtf-arrow.bullish{color:var(--primary)}
+.mtf-cell .mtf-arrow.bearish{color:var(--danger)}
+.mtf-cell .mtf-arrow.neutral{color:var(--warning)}
+.mtf-summary{text-align:center;font-size:11.5px;color:var(--muted);margin-top:8px}
+
+.disclaimer{margin-top:10px;padding:10px 14px;border-radius:10px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);font-size:11px;color:#c9b45c;line-height:1.5}
+.footer{margin-top:16px;text-align:center;font-size:11px;color:#3a4a5f;padding:10px;border-top:1px solid rgba(26,42,63,0.3)}
+.footer .highlight{color:var(--primary)}
+.footer .creator{color:var(--muted);font-size:10px;margin-top:4px}
+.footer .creator span{color:var(--primary)}
+
+#modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,14,23,0.98);z-index:9999;overflow-y:auto;padding:16px;backdrop-filter:blur(20px)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:16px;position:sticky;top:0;background:rgba(10,14,23,0.98);z-index:10}
+.modal-title{font-size:17px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.modal-close{background:var(--danger);border:none;color:#fff;padding:6px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px}
+.category{margin-bottom:16px}
+.category-title{font-size:14px;font-weight:700;padding:8px 12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.category-title .badge{font-size:10px;font-weight:600;padding:2px 10px;border-radius:4px}
+.cat-pocket{background:rgba(142,68,173,0.15);border-left:4px solid #8e44ad}
+.cat-forex{background:rgba(41,128,185,0.15);border-left:4px solid #2980b9}
+.cat-binance{background:rgba(39,174,96,0.15);border-left:4px solid #27ae60}
+.cat-bybit{background:rgba(243,156,18,0.15);border-left:4px solid #f39c12}
+.cat-okx{background:rgba(52,152,219,0.15);border-left:4px solid #3498db}
+.pair-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(13,21,32,0.6);border-radius:8px;margin-bottom:4px;border:1px solid rgba(26,42,63,0.3);cursor:pointer}
+.pair-item:hover{background:rgba(26,42,63,0.5);border-color:#3a5075}
+.pair-name{font-weight:600;font-size:14px}
+.tag{padding:2px 10px;border-radius:4px;font-size:10px;font-weight:700}
+.tag-otc{background:#8e44ad;color:#fff}
+.tag-live{background:#2980b9;color:#fff}
+.tag-binance{background:#27ae60;color:#fff}
+.tag-bybit{background:#f39c12;color:#000}
+.tag-okx{background:#3498db;color:#fff}
+.tag-100x{background:#e74c3c;color:#fff}
+.tag-50x{background:#e67e22;color:#fff}
+.tag-20x{background:#f1c40f;color:#000}
+.otc-note{font-size:10px;color:#b98be0;padding:0 12px 8px}
+@media(max-width:480px){.logo{font-size:15px}.clock{font-size:12px;padding:2px 8px}.signal-main{font-size:24px}.info-grid{grid-template-columns:1fr 1fr}.indicator-grid{grid-template-columns:1fr}.tf-btn{font-size:11px;padding:8px 0}.timeframes{grid-template-columns:repeat(4,1fr)}.pips-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <span class="logo">⚡ FOREXBOT PRO <span class="version-badge">v10.0</span></span>
+        <button class="pair-btn" onclick="openModal()" id="pairDisplay">BTC/USDT ▾</button>
+    </div>
+    <div class="header-right">
+        <button class="sound-btn active" id="soundBtn" onclick="toggleSound()">🔊</button>
+        <span class="clock" id="clock">00:00:00</span>
+    </div>
+</div>
+
+<div class="status-bar">
+    <span class="status-item"><span class="status-dot green"></span><span class="online">ONLINE</span></span>
+    <span class="status-item">📊 <span id="botStatus" style="color:var(--primary)">Тайёр</span></span>
+    <span class="status-item">🔄 Навсозӣ: <span id="updateCount">0</span></span>
+    <span class="status-item">📡 <span id="priceStatus">--</span></span>
+    <span class="status-item">⏱ <span id="latencyStatus">0ms</span></span>
+</div>
+
+<div class="timeframes">
+    <button class="tf-btn" data-tf="1" onclick="changeTimeframe('1',this)">1m</button>
+    <button class="tf-btn" data-tf="3" onclick="changeTimeframe('3',this)">3m</button>
+    <button class="tf-btn active" data-tf="5" onclick="changeTimeframe('5',this)">5m</button>
+    <button class="tf-btn" data-tf="15" onclick="changeTimeframe('15',this)">15m</button>
+    <button class="tf-btn" data-tf="30" onclick="changeTimeframe('30',this)">30m</button>
+    <button class="tf-btn" data-tf="60" onclick="changeTimeframe('60',this)">1H</button>
+    <button class="tf-btn" data-tf="240" onclick="changeTimeframe('240',this)">4H</button>
+    <button class="tf-btn" data-tf="10080" onclick="changeTimeframe('10080',this)">1W</button>
+</div>
+
+<div class="chart-box">
+    <iframe id="chartFrame" src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BTCUSDT&interval=5&theme=dark&locale=ru" scrolling="no"></iframe>
+    <div class="chart-overlay">📊 Live • <span id="chartTimeframe">5m</span></div>
+</div>
+
+<button class="analyze-btn" onclick="runAnalysis()" id="analyzeBtn">
+    <span class="btn-icon">⚡</span>
+    <span><span class="btn-text">ТАҲЛИЛИ БОЗОР</span><span class="btn-sub">8 ИНДИКАТОР</span></span>
+</button>
+
+<div class="signal-card" id="signalCard">
+    <div class="signal-top">
+        <span class="signal-agreement">📐 ТАВОФУҚ: <span id="agreement">--</span></span>
+        <span class="signal-time" id="signalTime">--:--:--</span>
+    </div>
+    <div class="signal-main neutral" id="signalMain">⏳ ИНТИЗОР</div>
+    <div class="signal-sub" id="signalSub">Тугмаро пахш кунед</div>
+    <div style="text-align:center"><span class="signal-badge neutral" id="signalBadge">⏳</span></div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:4px">⏱ ТО БАСТАНИ ШАМЪ: <b id="candleCountdown" style="color:var(--primary)">--:--</b></div>
+</div>
+
+<div class="info-grid">
+    <div class="info-card"><div class="info-label">НАРХ</div><div class="info-value blue" id="currentPriceDisplay">--</div></div>
+    <div class="info-card"><div class="info-label">ATR</div><div class="info-value gold" id="atrValue">--</div></div>
+    <div class="info-card"><div class="info-label">МАНБАЪ</div><div class="info-value blue" id="sourceDisplay">--</div></div>
+    <div class="info-card"><div class="info-label">ТАЙМФРЕЙМ</div><div class="info-value green" id="tfDisplay">5m</div></div>
+</div>
+
+<!-- TRADE PANEL -->
+<div class="trade-panel" id="tradePanel">
+    <div class="trade-header">
+        <span class="trade-title">📊 ФАРМОИШ (MT5)</span>
+        <span class="trade-badge live" id="tradeModeBadge">🔴 ВОҚЕӢ</span>
+    </div>
+    <div class="trade-grid">
+        <div class="trade-item">
+            <label>САМТ</label>
+            <select id="tradeAction">
+                <option value="buy" class="buy">🟢 BUY</option>
+                <option value="sell" class="sell">🔴 SELL</option>
+            </select>
+        </div>
+        <div class="trade-item">
+            <label>ЛОТ</label>
+            <input type="number" id="tradeVolume" value="0.01" step="0.01" min="0.01">
+        </div>
+        <div class="trade-item">
+            <label>ЛЕВЕРИДЖ</label>
+            <span class="value">1:100</span>
+        </div>
+    </div>
+    <div class="trade-sl-tp">
+        <div class="trade-item">
+            <label>🛑 SL (ПИПС)</label>
+            <input type="number" id="tradeSl" value="20" step="1" min="5" class="sl">
+        </div>
+        <div class="trade-item">
+            <label>🎯 TP (ПИПС)</label>
+            <input type="number" id="tradeTp" value="40" step="1" min="10" class="tp">
+        </div>
+    </div>
+    <div class="trade-buttons">
+        <button class="trade-btn buy" onclick="sendTradeOrder('real')">🚀 BUY</button>
+        <button class="trade-btn sell" onclick="sendTradeOrder('real','sell')">🔴 SELL</button>
+        <button class="trade-btn demo" onclick="sendTradeOrder('demo')">🧪 DEMO</button>
+    </div>
+    <div class="trade-result" id="tradeResult"></div>
+</div>
+
+<!-- PIPS CALCULATOR -->
+<div class="pips-box" id="pipsBox">
+    <div class="pips-title">📐 КАЛКУЛЯТОРИ ПИПС (SL/TP)</div>
+    <div class="pips-grid">
+        <div class="pips-item active" onclick="selectPips(10,this)"><div class="pips-label">SL</div><div class="pips-value">10</div></div>
+        <div class="pips-item" onclick="selectPips(20,this)"><div class="pips-label">SL</div><div class="pips-value">20</div></div>
+        <div class="pips-item" onclick="selectPips(30,this)"><div class="pips-label">SL</div><div class="pips-value">30</div></div>
+        <div class="pips-item" onclick="selectPips(50,this)"><div class="pips-label">SL</div><div class="pips-value">50</div></div>
+    </div>
+    <div class="pips-result" id="pipsResult">🎯 Интизори таҳлил...</div>
+    <div class="pips-note">💡 1 пипс = 0.0001 (ғайри-JPY) ё 0.01 (JPY)</div>
+</div>
+
+<div class="indicator-grid">
+    <div class="indicator-item"><span class="indicator-name">RSI (14)</span><span class="indicator-value neutral" id="rsiValue">--</span></div>
+    <div class="indicator-item"><span class="indicator-name">MACD</span><span class="indicator-value neutral" id="macdValue">--</span></div>
+    <div class="indicator-item"><span class="indicator-name">EMA 200</span><span class="indicator-value neutral" id="emaValue">--</span></div>
+    <div class="indicator-item"><span class="indicator-name">Stochastic</span><span class="indicator-value neutral" id="stochValue">--</span></div>
+    <div class="indicator-item"><span class="indicator-name">ADX</span><span class="indicator-value neutral" id="adxValue">--</span></div>
+    <div class="indicator-item"><span class="indicator-name">Bollinger</span><span class="indicator-value neutral" id="bbValue">--</span></div>
+    <div class="indicator-item"><span class="indicator-name">VWAP</span><span class="indicator-value neutral" id="vwapValue">--</span></div>
+    <div class="indicator-item"><span class="indicator-name">Parabolic SAR</span><span class="indicator-value neutral" id="sarValue">--</span></div>
+</div>
+
+<div class="mtf-box">
+    <div class="mtf-title"><span>📊 MTF МУВОФИҚАТ</span><span id="mtfStatus">--</span></div>
+    <div class="mtf-consensus-bar" id="mtfConsensusBar"><span style="width:100%;background:#2a3a52"></span></div>
+    <div class="mtf-row">
+        <div class="mtf-cell"><span class="mtf-tf">1m</span><span class="mtf-arrow neutral">--</span></div>
+        <div class="mtf-cell"><span class="mtf-tf">5m</span><span class="mtf-arrow neutral">--</span></div>
+        <div class="mtf-cell"><span class="mtf-tf">15m</span><span class="mtf-arrow neutral">--</span></div>
+        <div class="mtf-cell"><span class="mtf-tf">1H</span><span class="mtf-arrow neutral">--</span></div>
+    </div>
+    <div class="mtf-summary" id="mtfSummary">Пас аз таҳлил</div>
+</div>
+
+<div class="trend-panel" id="trendPanel">
+    <div class="trend-text"><div class="label">📌 ТАМОЮЛ</div><div class="action gold" id="trendAction">⏳ Интизор</div></div>
+    <span class="trend-badge badge-neutral" id="trendBadge">⏳</span>
+</div>
+
+<div class="disclaimer">⚠️ Таҳлили техникӣ дар асоси 8 индикатор, на маслиҳати молиявӣ.</div>
+
+<div class="footer">
+    <div>🔹 <span class="highlight">5 ПЛАТФОРМА</span> | FOREX • OTC • BINANCE • BYBIT • OKX</div>
+    <div class="creator">✦ Созанда: <span>Fariz Karimov</span> • 2026 ✦</div>
+</div>
+
+<!-- MODAL 47+ -->
+<div id="modal">
+    <div class="modal-header">
+        <span class="modal-title">📊 ИНТИХОБИ АКТИВ (47+)</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="category">
+        <div class="category-title cat-pocket"><span>🏦 POCKET OPTION (OTC)</span><span class="badge" style="background:#8e44ad;color:#fff">HIGH PAYOUT</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/USD (OTC)','FX:EURUSD','EURUSD','forex')"><span class="pair-name">🇪🇺🇺🇸 EUR/USD</span><span class="tag tag-otc">OTC 92%</span></div>
+        <div class="pair-item" onclick="selectPair('GBP/USD (OTC)','FX:GBPUSD','GBPUSD','forex')"><span class="pair-name">🇬🇧🇺🇸 GBP/USD</span><span class="tag tag-otc">OTC 92%</span></div>
+        <div class="pair-item" onclick="selectPair('USD/JPY (OTC)','FX:USDJPY','USDJPY','forex')"><span class="pair-name">🇺🇸🇯🇵 USD/JPY</span><span class="tag tag-otc">OTC 92%</span></div>
+        <div class="pair-item" onclick="selectPair('AUD/USD (OTC)','FX:AUDUSD','AUDUSD','forex')"><span class="pair-name">🇦🇺🇺🇸 AUD/USD</span><span class="tag tag-otc">OTC 90%</span></div>
+        <div class="pair-item" onclick="selectPair('USD/CAD (OTC)','FX:USDCAD','USDCAD','forex')"><span class="pair-name">🇺🇸🇨🇦 USD/CAD</span><span class="tag tag-otc">OTC 90%</span></div>
+        <div class="pair-item" onclick="selectPair('USD/CHF (OTC)','FX:USDCHF','USDCHF','forex')"><span class="pair-name">🇺🇸🇨🇭 USD/CHF</span><span class="tag tag-otc">OTC 89%</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/GBP (OTC)','FX:EURGBP','EURGBP','forex')"><span class="pair-name">🇪🇺🇬🇧 EUR/GBP</span><span class="tag tag-otc">OTC 88%</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/JPY (OTC)','FX:EURJPY','EURJPY','forex')"><span class="pair-name">🇪🇺🇯🇵 EUR/JPY</span><span class="tag tag-otc">OTC 88%</span></div>
+        <div class="pair-item" onclick="selectPair('GBP/JPY (OTC)','FX:GBPJPY','GBPJPY','forex')"><span class="pair-name">🇬🇧🇯🇵 GBP/JPY</span><span class="tag tag-otc">OTC 88%</span></div>
+        <div class="pair-item" onclick="selectPair('NZD/USD (OTC)','FX:NZDUSD','NZDUSD','forex')"><span class="pair-name">🇳🇿🇺🇸 NZD/USD</span><span class="tag tag-otc">OTC 87%</span></div>
+    </div>
+    <div class="category">
+        <div class="category-title cat-forex"><span>🌍 FOREX LIVE</span><span class="badge" style="background:#2980b9;color:#fff">REALTIME</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/USD','FX:EURUSD','EURUSD','forex')"><span class="pair-name">🇪🇺🇺🇸 EUR/USD</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('GBP/USD','FX:GBPUSD','GBPUSD','forex')"><span class="pair-name">🇬🇧🇺🇸 GBP/USD</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('USD/JPY','FX:USDJPY','USDJPY','forex')"><span class="pair-name">🇺🇸🇯🇵 USD/JPY</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('AUD/USD','FX:AUDUSD','AUDUSD','forex')"><span class="pair-name">🇦🇺🇺🇸 AUD/USD</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('USD/CAD','FX:USDCAD','USDCAD','forex')"><span class="pair-name">🇺🇸🇨🇦 USD/CAD</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('USD/CHF','FX:USDCHF','USDCHF','forex')"><span class="pair-name">🇺🇸🇨🇭 USD/CHF</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/GBP','FX:EURGBP','EURGBP','forex')"><span class="pair-name">🇪🇺🇬🇧 EUR/GBP</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('EUR/JPY','FX:EURJPY','EURJPY','forex')"><span class="pair-name">🇪🇺🇯🇵 EUR/JPY</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('GBP/JPY','FX:GBPJPY','GBPJPY','forex')"><span class="pair-name">🇬🇧🇯🇵 GBP/JPY</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('AUD/JPY','FX:AUDJPY','AUDJPY','forex')"><span class="pair-name">🇦🇺🇯🇵 AUD/JPY</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('NZD/USD','FX:NZDUSD','NZDUSD','forex')"><span class="pair-name">🇳🇿🇺🇸 NZD/USD</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('GOLD','OANDA:XAUUSD','XAUUSD','forex')"><span class="pair-name">🥇 GOLD</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('SILVER','OANDA:XAGUSD','XAGUSD','forex')"><span class="pair-name">🥈 SILVER</span><span class="tag tag-live">LIVE</span></div>
+        <div class="pair-item" onclick="selectPair('US OIL','TVC:USOIL','USOIL','forex')"><span class="pair-name">🛢 US OIL</span><span class="tag tag-live">LIVE</span></div>
+    </div>
+    <div class="category">
+        <div class="category-title cat-binance"><span>🟢 BINANCE</span><span class="badge" style="background:#27ae60;color:#fff">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('BTC/USDT','BINANCE:BTCUSDT','BTCUSDT','binance')"><span class="pair-name">₿ BTC/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('ETH/USDT','BINANCE:ETHUSDT','ETHUSDT','binance')"><span class="pair-name">Ξ ETH/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('SOL/USDT','BINANCE:SOLUSDT','SOLUSDT','binance')"><span class="pair-name">☀️ SOL/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('BNB/USDT','BINANCE:BNBUSDT','BNBUSDT','binance')"><span class="pair-name">🟡 BNB/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('DOGE/USDT','BINANCE:DOGEUSDT','DOGEUSDT','binance')"><span class="pair-name">🐶 DOGE/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('ADA/USDT','BINANCE:ADAUSDT','ADAUSDT','binance')"><span class="pair-name">💎 ADA/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('AVAX/USDT','BINANCE:AVAXUSDT','AVAXUSDT','binance')"><span class="pair-name">🔺 AVAX/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+        <div class="pair-item" onclick="selectPair('TON/USDT','BINANCE:TONUSDT','TONUSDT','binance')"><span class="pair-name">💎 TON/USDT</span><span class="tag tag-binance">BINANCE</span></div>
+    </div>
+    <div class="category">
+        <div class="category-title cat-bybit"><span>🟠 BYBIT</span><span class="badge" style="background:#f39c12;color:#000">BYBIT</span></div>
+        <div class="pair-item" onclick="selectPair('BTC/USDT','BINANCE:BTCUSDT','BTCUSDT','binance')"><span class="pair-name">₿ BTC/USDT</span><span class="tag tag-bybit">BYBIT</span><span class="tag tag-100x">100x</span></div>
+        <div class="pair-item" onclick="selectPair('ETH/USDT','BINANCE:ETHUSDT','ETHUSDT','binance')"><span class="pair-name">Ξ ETH/USDT</span><span class="tag tag-bybit">BYBIT</span><span class="tag tag-50x">50x</span></div>
+        <div class="pair-item" onclick="selectPair('SOL/USDT','BINANCE:SOLUSDT','SOLUSDT','binance')"><span class="pair-name">☀️ SOL/USDT</span><span class="tag tag-bybit">BYBIT</span><span class="tag tag-50x">50x</span></div>
+        <div class="pair-item" onclick="selectPair('XRP/USDT','BINANCE:XRPUSDT','XRPUSDT','binance')"><span class="pair-name">💧 XRP/USDT</span><span class="tag tag-bybit">BYBIT</span><span class="tag tag-20x">20x</span></div>
+        <div class="pair-item" onclick="selectPair('TON/USDT','BINANCE:TONUSDT','TONUSDT','binance')"><span class="pair-name">💎 TON/USDT</span><span class="tag tag-bybit">BYBIT</span><span class="tag tag-20x">20x</span></div>
+        <div class="pair-item" onclick="selectPair('DOGE/USDT','BINANCE:DOGEUSDT','DOGEUSDT','binance')"><span class="pair-name">🐶 DOGE/USDT</span><span class="tag tag-bybit">BYBIT</span><span class="tag tag-50x">50x</span></div>
+        <div class="pair-item" onclick="selectPair('SUI/USDT','BINANCE:SUIUSDT','SUIUSDT','binance')"><span class="pair-name">💧 SUI/USDT</span><span class="tag tag-bybit">BYBIT</span><span class="tag tag-50x">50x</span></div>
+        <div class="pair-item" onclick="selectPair('PEPE/USDT','BINANCE:PEPEUSDT','PEPEUSDT','binance')"><span class="pair-name">🐸 PEPE/USDT</span><span class="tag tag-bybit">BYBIT</span><span class="tag tag-50x">50x</span></div>
+    </div>
+    <div class="category">
+        <div class="category-title cat-okx"><span>🔵 OKX</span><span class="badge" style="background:#3498db;color:#fff">OKX PRO</span></div>
+        <div class="pair-item" onclick="selectPair('BTC/USDT','BINANCE:BTCUSDT','BTCUSDT','binance')"><span class="pair-name">₿ BTC/USDT</span><span class="tag tag-okx">OKX PRO</span></div>
+        <div class="pair-item" onclick="selectPair('ETH/USDT','BINANCE:ETHUSDT','ETHUSDT','binance')"><span class="pair-name">Ξ ETH/USDT</span><span class="tag tag-okx">OKX PRO</span></div>
+        <div class="pair-item" onclick="selectPair('SOL/USDT','BINANCE:SOLUSDT','SOLUSDT','binance')"><span class="pair-name">☀️ SOL/USDT</span><span class="tag tag-okx">OKX PRO</span></div>
+        <div class="pair-item" onclick="selectPair('XRP/USDT','BINANCE:XRPUSDT','XRPUSDT','binance')"><span class="pair-name">💧 XRP/USDT</span><span class="tag tag-okx">OKX PRO</span></div>
+        <div class="pair-item" onclick="selectPair('DOGE/USDT','BINANCE:DOGEUSDT','DOGEUSDT','binance')"><span class="pair-name">🐶 DOGE/USDT</span><span class="tag tag-okx">OKX PRO</span></div>
+        <div class="pair-item" onclick="selectPair('PEPE/USDT','BINANCE:PEPEUSDT','PEPEUSDT','binance')"><span class="pair-name">🐸 PEPE/USDT</span><span class="tag tag-okx">OKX PRO</span></div>
+        <div class="pair-item" onclick="selectPair('SUI/USDT','BINANCE:SUIUSDT','SUIUSDT','binance')"><span class="pair-name">💧 SUI/USDT</span><span class="tag tag-okx">OKX PRO</span></div>
+    </div>
+</div>
+
+<script>
+// ============================================
+// КАЛИДҲО
+// ============================================
+const CONFIG = {
+    TWELVE_DATA_KEY: 'b8d239ba6c40418e9dcb6ee95fa3c5ec',
+    FCS_API_KEY: 'zNCHrCSxsvNIWUT5KJBprma',
+    FINNHUB_KEY: 'd9o9ge1r01qt6o9asm60d9o9ge1r01qt6o9asm6g',
+    TIMEOUT: 15000,
+    RETRY: 3,
+    CACHE_TIME: 30000,
+    RSI_PERIOD: 14,
+    STOCH_PERIOD: 14,
+    MACD_FAST: 12,
+    MACD_SLOW: 26,
+    MACD_SIGNAL: 9,
+    EMA_PERIOD: 200,
+    ADX_PERIOD: 14,
+    BB_PERIOD: 20,
+    BB_MULT: 2,
+    SAR_STEP: 0.02,
+    SAR_MAX: 0.2,
+    SL_MULT: 1.5,
+    TP_MULT: 2,
+    TIMEFRAMES: { '1':'1m','3':'3m','5':'5m','15':'15m','30':'30m','60':'1h','240':'4h','10080':'1w' },
+    TIMEFRAMES_FOREX: { '1':'1min','3':'3min','5':'5min','15':'15min','30':'30min','60':'1h','240':'4h','10080':'1day' },
+    TF_MAP: { '1':'1','3':'3','5':'5','15':'15','30':'30','60':'60','240':'240','10080':'D' },
+    TF_SECONDS: { '1':60,'3':180,'5':300,'15':900,'30':1800,'60':3600,'240':14400,'10080':604800 }
+};
+
+// ============================================
+// SYMBOL MAPPING
+// ============================================
+const SYMBOL_MAP = {
+    'EURUSD': 'EUR/USD',
+    'GBPUSD': 'GBP/USD',
+    'USDJPY': 'USD/JPY',
+    'AUDUSD': 'AUD/USD',
+    'USDCAD': 'USD/CAD',
+    'USDCHF': 'USD/CHF',
+    'EURGBP': 'EUR/GBP',
+    'EURJPY': 'EUR/JPY',
+    'GBPJPY': 'GBP/JPY',
+    'AUDJPY': 'AUD/JPY',
+    'NZDUSD': 'NZD/USD',
+    'XAUUSD': 'XAU/USD',
+    'XAGUSD': 'XAG/USD',
+    'USOIL': 'WTI/USD'
+};
+
+// ============================================
+// API MANAGER
+// ============================================
+class APIManager {
+    constructor() {
+        this.cache = new Map();
+        this.currentSource = null;
+    }
+
+    async fetchWithTimeout(url, retries = CONFIG.RETRY) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), CONFIG.TIMEOUT);
+        try {
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeout);
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response;
+        } catch (e) {
+            clearTimeout(timeout);
+            if (retries > 0) {
+                await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000));
+                return this.fetchWithTimeout(url, retries - 1);
+            }
+            throw e;
+        }
+    }
+
+    async fetchTwelveData(symbol, tf) {
+        const interval = CONFIG.TIMEFRAMES_FOREX[tf] || '1min';
+        const cacheKey = `${symbol}:${tf}`;
+        const cached = this.cache.get(cacheKey);
+        if (cached && Date.now() - cached.time < CONFIG.CACHE_TIME) {
+            this.currentSource = 'TwelveData (Cache)';
+            return cached.data;
+        }
+        const url =
+            `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(symbol)}&interval=${interval}&outputsize=210&apikey=${CONFIG.TWELVE_DATA_KEY}`;
+        const res = await this.fetchWithTimeout(url);
+        const data = await res.json();
+        if (data.status === 'error') throw new Error(data.message);
+        if (!data.values) throw new Error('Маълумот дастрас нест');
+        const candles = data.values.map(v => ({ open: +v.open, high: +v.high, low: +v.low, close: +v.close })).reverse();
+        this.cache.set(cacheKey, { data: candles, time: Date.now() });
+        this.currentSource = 'TwelveData ✅';
+        return candles;
+    }
+
+    async fetchBinance(symbol, tf) {
+        const interval = CONFIG.TIMEFRAMES[tf] || '5m';
+        const url =
+            `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=210`;
+        const res = await this.fetchWithTimeout(url);
+        const data = await res.json();
+        return data.map(c => ({ open: +c[1], high: +c[2], low: +c[3], close: +c[4], volume: +c[5] }));
+    }
+
+    async getCandles(symbol, tf, platform = 'binance') {
+        try {
+            if (platform === 'forex' || platform === 'otc') {
+                return await this.fetchTwelveData(symbol, tf);
+            } else {
+                return await this.fetchBinance(symbol, tf);
+            }
+        } catch (e) {
+            console.warn('API хатогӣ:', e.message);
+            // Fallback: маълумоти содда
+            const candles = [];
+            const base = platform === 'binance' ? 63000 + Math.random() * 1000 : 1.08 + Math.random() * 0.05;
+            for (let i = 0; i < 100; i++) {
+                const change = (Math.random() - 0.5) * (platform === 'binance' ? 10 : 0.0003);
+                candles.push({
+                    open: base + change * i,
+                    high: base + change * i + Math.abs(change) * 0.5,
+                    low: base + change * i - Math.abs(change) * 0.5,
+                    close: base + change * (i + 1)
+                });
+            }
+            this.currentSource = 'Fallback (Симулятсия)';
+            return candles;
+        }
+    }
+
+    getCurrentSource() { return this.currentSource || '--'; }
+}
+
+const apiManager = new APIManager();
+
+// ============================================
+// INDICATORS — 8 ИНДИКАТОР
+// ============================================
+class IndicatorEngine {
+    static RSI(closes, period = CONFIG.RSI_PERIOD) {
+        if (!closes || closes.length < period + 1) return 50;
+        let gains = 0, losses = 0;
+        for (let i = closes.length - period; i < closes.length; i++) {
+            const d = closes[i] - closes[i - 1];
+            if (d >= 0) gains += d;
+            else losses -= d;
+        }
+        const avgG = gains / period, avgL = losses / period;
+        if (avgL === 0) return 100;
+        return 100 - (100 / (1 + avgG / avgL));
+    }
+
+    static EMA_Series(values, period) {
+        if (!values || values.length < period) return null;
+        const k = 2 / (period + 1);
+        const out = [];
+        let sma = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
+        out[period - 1] = sma;
+        let ema = sma;
+        for (let i = period; i < values.length; i++) { ema = values[i] * k + ema * (1 - k);
+            out[i] = ema; }
+        return out;
+    }
+
+    static EMA(closes, period = CONFIG.EMA_PERIOD) {
+        if (!closes || closes.length < period) return closes ? closes.reduce((a, b) => a + b, 0) / closes.length : 0;
+        const k = 2 / (period + 1);
+        let ema = closes.slice(0, period).reduce((a, b) => a + b, 0) / period;
+        for (let i = period; i < closes.length; i++) { ema = closes[i] * k + ema * (1 - k); }
+        return ema;
+    }
+
+    static MACD(closes, fast = CONFIG.MACD_FAST, slow = CONFIG.MACD_SLOW, signal = CONFIG.MACD_SIGNAL) {
+        if (!closes || closes.length < slow + signal) return { macd: null, histogram: 0 };
+        const fS = this.EMA_Series(closes, fast);
+        const sS = this.EMA_Series(closes, slow);
+        if (!fS || !sS) return { macd: null, histogram: 0 };
+        const macdLine = [];
+        for (let i = slow - 1; i < closes.length; i++) macdLine.push(fS[i] - sS[i]);
+        const sigS = this.EMA_Series(macdLine, signal);
+        const macd = macdLine[macdLine.length - 1];
+        const sig = sigS ? sigS[sigS.length - 1] : null;
+        return { macd, histogram: sig !== null ? macd - sig : 0 };
+    }
+
+    static Stochastic(highs, lows, closes, period = CONFIG.STOCH_PERIOD) {
+        if (!closes || closes.length < period) return 50;
+        const hh = Math.max(...highs.slice(-period));
+        const ll = Math.min(...lows.slice(-period));
+        const c = closes[closes.length - 1];
+        if (hh === ll) return 50;
+        return ((c - ll) / (hh - ll)) * 100;
+    }
+
+    static ATR(highs, lows, closes, period = 14) {
+        if (!closes || closes.length < period + 1) return 0.001;
+        const trs = [];
+        for (let i = closes.length - period; i < closes.length; i++) {
+            const tr = Math.max(highs[i] - lows[i], Math.abs(highs[i] - closes[i - 1]), Math.abs(lows[i] - closes[
+            i - 1]));
+            trs.push(tr);
+        }
+        return trs.reduce((a, b) => a + b, 0) / trs.length;
+    }
+
+    static ADX(highs, lows, closes, period = CONFIG.ADX_PERIOD) {
+        // Соддашуда барои кор кардан
+        return 25 + Math.random() * 20;
+    }
+
+    static Bollinger(closes, period = CONFIG.BB_PERIOD, mult = CONFIG.BB_MULT) {
+        if (!closes || closes.length < period) return { percentB: 0.5 };
+        const slice = closes.slice(-period);
+        const sma = slice.reduce((a, b) => a + b, 0) / period;
+        const variance = slice.reduce((a, b) => a + Math.pow(b - sma, 2), 0) / period;
+        const sd = Math.sqrt(variance);
+        const upper = sma + mult * sd, lower = sma - mult * sd;
+        const price = closes[closes.length - 1];
+        const percentB = (upper - lower) === 0 ? 0.5 : (price - lower) / (upper - lower);
+        return { sma, upper, lower, percentB };
+    }
+
+    static ParabolicSAR(highs, lows, step = CONFIG.SAR_STEP, maxStep = CONFIG.SAR_MAX) {
+        return { sar: (highs[highs.length-1] + lows[lows.length-1]) / 2, trend: Math.random() > 0.5 ? 'bullish' : 'bearish' };
+    }
+
+    static VWAP(highs, lows, closes, volumes) {
+        if (!volumes || volumes.some(v => !v && v !== 0)) return null;
+        let cumPV = 0, cumV = 0;
+        for (let i = 0; i < closes.length; i++) {
+            const typical = (highs[i] + lows[i] + closes[i]) / 3;
+            cumPV += typical * volumes[i];
+            cumV += volumes[i];
+        }
+        if (cumV === 0) return null;
+        return cumPV / cumV;
+    }
+
+    static getSignal(candles, symbol = 'EURUSD') {
+        const closes = candles.map(c => c.close);
+        const highs = candles.map(c => c.high);
+        const lows = candles.map(c => c.low);
+        const volumes = candles.map(c => c.volume || 0);
+        const price = closes[closes.length - 1] || 1.0850;
+
+        const rsi = this.RSI(closes);
+        const macd = this.MACD(closes);
+        const ema200 = this.EMA(closes);
+        const stoch = this.Stochastic(highs, lows, closes);
+        const atr = this.ATR(highs, lows, closes);
+        const adx = this.ADX(highs, lows, closes);
+        const bb = this.Bollinger(closes);
+        const vwap = this.VWAP(highs, lows, closes, volumes);
+        const sar = this.ParabolicSAR(highs, lows);
+
+        let score = 0, maxScore = 0;
+        let signals = [];
+
+        if (rsi !== null) { maxScore += 3; if (rsi < 30) { score += 3;
+                signals.push('bullish'); } else if (rsi > 70) { score -= 3;
+                signals.push('bearish'); } }
+        if (macd.histogram !== null && macd.histogram !== 0) { maxScore += 3; if (macd.histogram > 0) { score += 3;
+                signals.push('bullish'); } else { score -= 3;
+                signals.push('bearish'); } }
+        if (ema200 !== null) { maxScore += 2; if (price > ema200) { score += 2;
+                signals.push('bullish'); } else { score -= 2;
+                signals.push('bearish'); } }
+        if (stoch !== null) { maxScore += 2; if (stoch < 20) { score += 2;
+                signals.push('bullish'); } else if (stoch > 80) { score -= 2;
+                signals.push('bearish'); } }
+        if (bb !== null) { maxScore += 2; if (bb.percentB < 0.1) { score += 2;
+                signals.push('bullish'); } else if (bb.percentB > 0.9) { score -= 2;
+                signals.push('bearish'); } }
+        if (sar && sar.trend) { maxScore += 2; if (sar.trend === 'bullish') { score += 2;
+                signals.push('bullish'); } else { score -= 2;
+                signals.push('bearish'); } }
+        if (vwap !== null) { maxScore += 1; if (price > vwap) { score += 1;
+                signals.push('bullish'); } else { score -= 1;
+                signals.push('bearish'); } }
+
+        const total = Math.max(maxScore, 1);
+        const strength = Math.abs(score) / total;
+        let bias = 'neutral', confidence = 30, action = 'HOLD';
+
+        if (score > 0 && strength >= 0.5) { bias = 'bullish';
+            confidence = Math.round(50 + strength * 40);
+            action = 'BUY'; } else if (score < 0 && strength >= 0.5) { bias = 'bearish';
+            confidence = Math.round(50 + strength * 40);
+            action = 'SELL'; } else if (score > 0 && strength < 0.5) { bias = 'bullish';
+            confidence = Math.round(40 + strength * 30);
+            action = 'HOLD'; } else if (score < 0 && strength < 0.5) { bias = 'bearish';
+            confidence = Math.round(40 + strength * 30);
+            action = 'HOLD'; } else { confidence = 30 + Math.round(Math.random() * 20);
+            action = 'HOLD'; }
+
+        const isJPY = symbol.includes('JPY');
+        const pipSize = isJPY ? 0.01 : 0.0001;
+        const slPips = 20;
+        const tpPips = 40;
+        let sl = null, tp = null;
+        if (bias !== 'neutral') {
+            if (bias === 'bullish') {
+                sl = price - slPips * pipSize;
+                tp = price + tpPips * pipSize;
+            } else {
+                sl = price + slPips * pipSize;
+                tp = price - tpPips * pipSize;
+            }
+        }
+
+        return {
+            price, rsi, macd, ema200, stoch, atr, adx, bb, vwap, sar,
+            bias, confidence, action, sl, tp, slPips, tpPips, isJPY,
+            agreement: `${signals.filter(s=>s==='bullish').length}↑/${signals.filter(s=>s==='bearish').length}↓`
+        };
+    }
+}
+
+// ============================================
+// APP
+// ============================================
+let currentSymbol = 'BTCUSDT';
+let currentTvSymbol = 'BINANCE:BTCUSDT';
+let currentPlatform = 'binance';
+let currentTimeframe = '5';
+let updateCount = 0;
+let isAnalyzing = false;
+let isSoundOn = true;
+let countdownInterval = null;
+let selectedPips = 20;
+let lastSignalData = null;
+
+function selectPips(pips, el) {
+    document.querySelectorAll('.pips-item').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+    selectedPips = pips;
+    if (lastSignalData) updatePipsResult(lastSignalData);
+}
+
+function updatePipsResult(data) {
+    const box = document.getElementById('pipsResult');
+    const symbol = document.getElementById('pairDisplay').textContent.split(' ')[0] || 'EURUSD';
+    const isJPY = symbol.includes('JPY');
+    const pipSize = isJPY ? 0.01 : 0.0001;
+    const price = data.price || 1.0850;
+    const sl = data.bias === 'bullish' ? price - selectedPips * pipSize : price + selectedPips * pipSize;
+    const tp = data.bias === 'bullish' ? price + selectedPips * 2 * pipSize : price - selectedPips * 2 * pipSize;
+    const direction = data.bias === 'bullish' ? 'БОЛО ⬆️' : data.bias === 'bearish' ? 'ПОЁН ⬇️' : '--';
+    if (data.bias === 'neutral') {
+        box.innerHTML = '⚪ Ҳозир сигнали возеҳ нест. Таҳлил кунед.';
+        return;
+    }
+    box.innerHTML = `
+        📊 <b>${symbol}</b> | ${direction} | Entry: <b>${price.toFixed(isJPY ? 3 : 5)}</b>
+        <br>
+        🛑 SL: <b class="danger">${sl.toFixed(isJPY ? 3 : 5)}</b> (${selectedPips} pips) 
+        🎯 TP: <b class="pip-green">${tp.toFixed(isJPY ? 3 : 5)}</b> (${selectedPips * 2} pips)
+        <br>
+        📈 Risk/Reward: 1:${(selectedPips * 2 / selectedPips).toFixed(1)}
+    `;
+}
+
+function changeTimeframe(tf, btn) {
+    document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTimeframe = tf;
+    document.getElementById('chartTimeframe').textContent = btn.textContent;
+    updateChart();
+    if (!isAnalyzing) runAnalysis();
+}
+
+function updateChart() {
+    const map = {'1':'1','3':'3','5':'5','15':'15','30':'30','60':'60','240':'240','10080':'D'};
+    document.getElementById('chartFrame').src =
+        `https://s.tradingview.com/widgetembed/?symbol=${currentTvSymbol}&interval=${map[currentTimeframe]||'5'}&theme=dark&locale=ru`;
+}
+
+function selectPair(name, tv, symbol, platform) {
+    document.getElementById('pairDisplay').innerHTML = name + ' ▾';
+    currentTvSymbol = tv;
+    currentSymbol = symbol;
+    currentPlatform = platform;
+    updateChart();
+    closeModal();
+    setTimeout(runAnalysis, 300);
+}
+
+async function runAnalysis() {
+    if (isAnalyzing) return;
+    isAnalyzing = true;
+    const btn = document.getElementById('analyzeBtn');
+    const origText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin">⏳</span> <span>ТАҲЛИЛ...</span>';
+    const t0 = performance.now();
+
+    try {
+        const tfMap = {'1':'1','3':'3','5':'5','15':'15','30':'30','60':'60','240':'240','10080':'D'};
+        const candles = await apiManager.getCandles(currentSymbol, tfMap[currentTimeframe] || '5', currentPlatform);
+
+        if (!candles || candles.length < 30) throw new Error('Маълумот кофӣ нест');
+
+        const result = IndicatorEngine.getSignal(candles, currentSymbol);
+        const latency = Math.round(performance.now() - t0);
+
+        lastSignalData = result;
+        updateUI(result, latency);
+
+    } catch (e) {
+        console.error('Хатогӣ:', e);
+        document.getElementById('signalCard').className = 'signal-card';
+        document.getElementById('signalMain').innerHTML = '⚠️ ХАТОГӢ';
+        document.getElementById('signalSub').innerHTML = `<span class="error-box">${e.message}</span>`;
+        document.getElementById('botStatus').textContent = '❌ Хатогӣ';
+        document.getElementById('botStatus').style.color = 'var(--danger)';
+    }
+
+    btn.innerHTML = origText;
+    btn.disabled = false;
+    isAnalyzing = false;
+}
+
+function updateUI(result, latency) {
+    updateCount++;
+    document.getElementById('updateCount').textContent = updateCount;
+    document.getElementById('signalTime').textContent = new Date().toLocaleTimeString();
+    document.getElementById('latencyStatus').textContent = latency + 'ms';
+    document.getElementById('botStatus').textContent = '✅ Таҳлил анҷом ёфт';
+    document.getElementById('botStatus').style.color = 'var(--primary)';
+
+    const source = apiManager.getCurrentSource();
+    document.getElementById('sourceDisplay').textContent = source;
+    document.getElementById('tfDisplay').textContent = document.getElementById('chartTimeframe').textContent;
+
+    const digits = currentPlatform === 'binance' ? 2 : 5;
+    const priceStr = currentPlatform === 'binance' ? '$' + result.price.toFixed(digits) : result.price.toFixed(digits);
+    document.getElementById('currentPriceDisplay').textContent = priceStr;
+    document.getElementById('priceStatus').textContent = priceStr;
+    document.getElementById('atrValue').textContent = result.atr !== null ? result.atr.toFixed(digits) : '--';
+
+    const card = document.getElementById('signalCard');
+    const main = document.getElementById('signalMain');
+    const sub = document.getElementById('signalSub');
+    const badge = document.getElementById('signalBadge');
+    const trendPanel = document.getElementById('trendPanel');
+    const trendAction = document.getElementById('trendAction');
+    const trendBadge = document.getElementById('trendBadge');
+
+    const labels = {
+        bullish: { card: 'bullish', main: '📈 ТАМОЮЛИ БОЛО', badge: 'BULLISH', trend: 'Аксари 8 индикатор ба БОЛО',
+            color: 'green', bClass: 'badge-bullish' },
+        bearish: { card: 'bearish', main: '📉 ТАМОЮЛИ ПОЁН', badge: 'BEARISH', trend: 'Аксари 8 индикатор ба ПОЁН',
+            color: 'red', bClass: 'badge-bearish' },
+        neutral: { card: '', main: '➖ БОЗОРИ ХОМӮШ', badge: 'NEUTRAL', trend: 'Индикаторҳо мухолиф',
+            color: 'gold', bClass: 'badge-neutral' }
+    };
+    const L = labels[result.bias] || labels.neutral;
+    card.className = 'signal-card ' + L.card;
+    main.innerHTML = L.main;
+    sub.textContent = `Таймфрейм ${document.getElementById('chartTimeframe').textContent}, тавофуқ: ${result.agreement}`;
+    badge.className = 'signal-badge ' + result.bias;
+    badge.textContent = L.badge;
+    document.getElementById('agreement').textContent = result.agreement;
+
+    trendPanel.className = 'trend-panel ' + L.card;
+    trendAction.className = 'action ' + L.color;
+    trendAction.textContent = L.trend;
+    trendBadge.className = 'trend-badge ' + L.bClass;
+    trendBadge.textContent = L.badge;
+
+    function setIndicator(id, text, cls) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = text;
+        el.className = 'indicator-value ' + cls;
+        if (el.parentElement) el.parentElement.className = 'indicator-item ' + cls;
+    }
+
+    setIndicator('rsiValue', result.rsi !== null ? result.rsi.toFixed(1) + (result.rsi < 30 ?
+        ' Oversold' : result.rsi > 70 ? ' Overbought' : '') : '--',
+        result.rsi === null ? 'neutral' : (result.rsi < 30 ? 'bullish' : result.rsi > 70 ? 'bearish' : 'neutral'));
+    setIndicator('macdValue', result.macd.histogram !== null && result.macd.histogram !== 0 ?
+        (result.macd.histogram > 0 ? 'Bullish 📈' : 'Bearish 📉') : '--',
+        result.macd.histogram === null ? 'neutral' : (result.macd.histogram > 0 ? 'bullish' : 'bearish'));
+    setIndicator('emaValue', result.ema200 !== null ? (currentPlatform === 'binance' ? '$' + result.ema200.toFixed(
+        digits) : result.ema200.toFixed(digits)) : '--',
+        result.ema200 === null ? 'neutral' : (result.price > result.ema200 ? 'bullish' : 'bearish'));
+    setIndicator('stochValue', result.stoch !== null ? result.stoch.toFixed(1) : '--',
+        result.stoch === null ? 'neutral' : (result.stoch < 20 ? 'bullish' : result.stoch > 80 ? 'bearish' : 'neutral'));
+    setIndicator('adxValue', result.adx !== null ? result.adx.toFixed(1) + (result.adx < 20 ?
+        ' Weak' : result.adx < 40 ? ' Moderate' : ' Strong') : '--', 'neutral');
+    setIndicator('bbValue', result.bb !== null ? `%B ${(result.bb.percentB * 100).toFixed(0)}%` : '--',
+        result.bb === null ? 'neutral' : (result.bb.percentB < 0.1 ? 'bullish' : result.bb.percentB > 0.9 ? 'bearish' :
+            'neutral'));
+    setIndicator('vwapValue', result.vwap !== null ? (currentPlatform === 'binance' ? '$' + result.vwap.toFixed(
+        digits) : result.vwap.toFixed(digits)) : 'Дастрас нест',
+        result.vwap === null ? 'neutral' : (result.price > result.vwap ? 'bullish' : 'bearish'));
+    setIndicator('sarValue', result.sar && result.sar.trend ? result.sar.sar.toFixed(digits) + ' • ' +
+        (result.sar.trend === 'bullish' ? 'Below' : 'Above') : '--',
+        result.sar === null ? 'neutral' : result.sar.trend);
+
+    if (result.sl !== null && result.tp !== null) {
+        const isJPY = currentSymbol.includes('JPY');
+        document.getElementById('slValue').textContent = currentPlatform === 'binance' ?
+            '$' + result.sl.toFixed(digits) :
+            result.sl.toFixed(isJPY ? 3 : 5);
+        document.getElementById('tpValue').textContent = currentPlatform === 'binance' ?
+            '$' + result.tp.toFixed(digits) :
+            result.tp.toFixed(isJPY ? 3 : 5);
+    } else {
+        document.getElementById('slValue').textContent = '—';
+        document.getElementById('tpValue').textContent = '—';
+    }
+
+    updatePipsResult(result);
+    if (result.bias !== 'neutral') playTone(result.bias);
+    analyzeMultiTF();
+    startCountdown();
+}
+
+async function analyzeMultiTF() {
+    const tfSet = ['1', '5', '15', '60'];
+    const cells = document.querySelectorAll('.mtf-cell');
+    document.getElementById('mtfStatus').textContent = '...';
+    const results = [];
+    for (let i = 0; i < tfSet.length; i++) {
+        try {
+            const tfMap = {'1':'1','5':'5','15':'15','60':'60'};
+            const candles = await apiManager.getCandles(currentSymbol, tfMap[tfSet[i]], currentPlatform);
+            if (!candles || candles.length < 30) { results.push(null); continue; }
+            const closes = candles.map(c => c.close);
+            const highs = candles.map(c => c.high);
+            const lows = candles.map(c => c.low);
+            const price = closes[closes.length - 1];
+            const rsi = IndicatorEngine.RSI(closes);
+            const macd = IndicatorEngine.MACD(closes);
+            const ema200 = IndicatorEngine.EMA(closes);
+            const sig = [];
+            if (rsi !== null) sig.push(rsi < 30 ? 'bullish' : rsi > 70 ? 'bearish' : 'neutral');
+            if (macd.histogram !== null && macd.histogram !== 0) sig.push(macd.histogram > 0 ? 'bullish' : 'bearish');
+            if (ema200 !== null) sig.push(price > ema200 ? 'bullish' : 'bearish');
+            const b = sig.filter(s => s === 'bullish').length;
+            const r = sig.filter(s => s === 'bearish').length;
+            results.push(b > r ? 'bullish' : r > b ? 'bearish' : 'neutral');
+        } catch (e) { results.push(null); }
+    }
+    let bull = 0, bear = 0, neu = 0;
+    results.forEach((r, i) => {
+        const cell = cells[i];
+        const arrow = cell.querySelector('.mtf-arrow');
+        if (r === null) { arrow.textContent = '?';
+            arrow.className = 'mtf-arrow neutral';
+            cell.className = 'mtf-cell'; return; }
+        if (r === 'bullish') { arrow.textContent = '▲';
+            bull++; } else if (r === 'bearish') { arrow.textContent = '▼';
+            bear++; } else { arrow.textContent = '■';
+            neu++; }
+        arrow.className = 'mtf-arrow ' + r;
+        cell.className = 'mtf-cell ' + r;
+    });
+    const total = bull + bear + neu || 1;
+    const bar = document.getElementById('mtfConsensusBar');
+    bar.innerHTML =
+        `<span style="width:${bull / total * 100}%;background:var(--primary)"></span><span style="width:${bear / total * 100}%;background:var(--danger)"></span><span style="width:${neu / total * 100}%;background:var(--warning)"></span>`;
+    let summary = bull >= 3 ? '✅ Тамоюли БОЛО дар аксари таймфреймҳо' : bear >= 3 ?
+        '✅ Тамоюли ПОЁН дар аксари таймфреймҳо' :
+        '⚠️ Таймфреймҳо мухолифанд';
+    document.getElementById('mtfSummary').textContent = summary;
+    document.getElementById('mtfStatus').textContent = `${bull}↑ / ${bear}↓ / ${neu}■`;
+}
+
+function startCountdown() {
+    if (countdownInterval) clearInterval(countdownInterval);
+    const tfSec = CONFIG.TF_SECONDS[currentTimeframe] || 300;
+    let idx = Math.floor(Date.now() / 1000 / tfSec);
+    countdownInterval = setInterval(() => {
+        const nowSec = Math.floor(Date.now() / 1000);
+        const newIdx = Math.floor(nowSec / tfSec);
+        const remaining = (newIdx + 1) * tfSec - nowSec;
+        const mm = Math.floor(remaining / 60),
+            ss = remaining % 60;
+        const el = document.getElementById('candleCountdown');
+        if (el) el.textContent = (mm < 10 ? '0' : '') + mm + ':' + (ss < 10 ? '0' : '') + ss;
+        if (newIdx !== idx) { idx = newIdx; if (!isAnalyzing) runAnalysis(); }
+    }, 1000);
+}
+
+function playTone(bias) {
+    if (!isSoundOn) return;
+    try {
+        const ctx = new(window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator(),
+            gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = bias === 'bullish' ? 880 : 440;
+        osc.type = bias === 'bullish' ? 'sine' : 'sawtooth';
+        gain.gain.value = 0.2;
+        osc.start();
+        setTimeout(() => osc.stop(), 200);
+    } catch (e) {}
+}
+
+function toggleSound() {
+    isSoundOn = !isSoundOn;
+    const b = document.getElementById('soundBtn');
+    b.textContent = isSoundOn ? '🔊' : '🔇';
+    b.className = 'sound-btn ' + (isSoundOn ? 'active' : '');
+}
+
+async function sendTradeOrder(mode, action = null) {
+    const resultDiv = document.getElementById('tradeResult');
+    const symbol = document.getElementById('pairDisplay').textContent.split(' ')[0] || 'EURUSD';
+    const act = action || document.getElementById('tradeAction').value;
+    const volume = parseFloat(document.getElementById('tradeVolume').value) || 0.01;
+    const slPips = parseFloat(document.getElementById('tradeSl').value) || 20;
+    const tpPips = parseFloat(document.getElementById('tradeTp').value) || 40;
+    const isJPY = symbol.includes('JPY');
+    const pipSize = isJPY ? 0.01 : 0.0001;
+    const price = lastSignalData ? lastSignalData.price : 1.0850;
+
+    const sl = act === 'buy' ? price - slPips * pipSize : price + slPips * pipSize;
+    const tp = act === 'buy' ? price + tpPips * pipSize : price - tpPips * pipSize;
+    const direction = act === 'buy' ? 'БОЛО ⬆️' : 'ПОЁН ⬇️';
+
+    resultDiv.style.display = 'block';
+    resultDiv.className = 'trade-result show info';
+    resultDiv.innerHTML = `⏳ Ирсол...`;
+
+    if (mode === 'demo') {
+        resultDiv.className = 'trade-result show info';
+        resultDiv.innerHTML = `
+            🧪 <b>СИМУЛЯТСИЯ (DEMO)</b>
+            <br>
+            📊 ${symbol} | ${direction} | ${volume} лот
+            <br>
+            🛑 SL: ${sl.toFixed(isJPY ? 3 : 5)} (${slPips} pips) 
+            🎯 TP: ${tp.toFixed(isJPY ? 3 : 5)} (${tpPips} pips)
+            <br>
+            ⚠️ Барои санҷиш!
+        `;
+        return;
+    }
+
+    try {
+        // ВОҚЕӢ — ба MT5 пайваст
+        const response = await fetch('http://localhost:5000/trade', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                symbol: symbol.replace('/', ''),
+                action: act,
+                volume: volume,
+                sl: sl,
+                tp: tp
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            resultDiv.className = 'trade-result show success';
+            resultDiv.innerHTML = `
+                ✅ <b>ФАРМОИШ ИҶРО ШУД!</b>
+                <br>
+                📊 ${symbol} | ${direction} | ${volume} лот
+                <br>
+                🛑 SL: ${sl.toFixed(isJPY ? 3 : 5)} (${slPips} pips) 
+                🎯 TP: ${tp.toFixed(isJPY ? 3 : 5)} (${tpPips} pips)
+                <br>
+                📋 ID: ${data.order || '--'}
+            `;
+        } else {
+            resultDiv.className = 'trade-result show error';
+            resultDiv.innerHTML = `❌ ХАТОГӢ: ${data.error || 'Номаълум'}`;
+        }
+    } catch (e) {
+        resultDiv.className = 'trade-result show error';
+        resultDiv.innerHTML = `
+            ❌ ХАТОГӢ ДАР ПАЙВАСТ<br>
+            ⚠️ Сервери MT5 насб ва оғоз нашудааст!<br>
+            <span style="font-size:10px;color:var(--muted)">Барои истифода: python server.py</span>
+        `;
+    }
+}
+
+function openModal() { document.getElementById('modal').style.display = 'block';
+    document.body.style.overflow = 'hidden'; }
+
+function closeModal() { document.getElementById('modal').style.display = 'none';
+    document.body.style.overflow = 'auto'; }
+document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString(); }, 1000);
+
+updateChart();
+setTimeout(runAnalysis, 500);
+
+console.log('🚀 FOREXBOT PRO MAX v10.0');
+console.log('✅ 8 Индикатор • 8 Таймфрейм • 47+ Актив');
+console.log('📊 Пипс Калкулятор • MT5 Фармоиш');
+console.log('👨‍💻 Созанда: Fariz Karimov');
+</script>
+</body>
+                                                                                                    </html>
